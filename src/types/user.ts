@@ -30,6 +30,7 @@ export interface IUserFind {
     userId?: string | Types.ObjectId;
     email?:string;
     username?: string;
+    longOtpCode?: string;
 }
 
 export interface IUserSearch {

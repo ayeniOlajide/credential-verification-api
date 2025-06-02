@@ -1,5 +1,6 @@
 import { Schema, model, Document, Types } from "mongoose";
 import { Role, IRole } from "./role"
+import { IInstitution, Institution } from "./institution";
 
 const UserSchema = new Schema ({
     username: {
@@ -25,6 +26,31 @@ const UserSchema = new Schema ({
     phone: {
         type: String,
         default: '',
+    },
+    institution: {
+        type: Types.ObjectId,
+        ref: "Institution",
+        default: null,
+    },
+    longOtpCode: {
+        type: String,
+        default: null,
+    },
+    longOtpExpiry: {
+        type: Date,
+        default: Date.now,
+    },
+    shortOtpCode: {
+        type: String,
+        default: null,
+    },
+    shortOtpExpiry: {
+        type: Date,
+        default: Date.now,
+    },
+    isBanned: {
+        type: Boolean,
+        default: false
     },
     role: {
         type: Types.ObjectId,
@@ -59,6 +85,13 @@ export interface IUser extends Document {
     emailVerified: string;
     lastSeen?: string;
     deleted?: string;
+    institution?: Types.ObjectId | IInstitution;
+    longOtpCode?: string;
+    longOtpExpiry: Date;
+    pin?: string;
+    shortOtpCode?: string;
+    shortOtpExpiry: Date;
+}
 }
 
 export const User = model<IUser>("User", UserSchema)

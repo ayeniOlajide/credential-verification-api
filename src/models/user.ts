@@ -92,6 +92,6 @@ export interface IUser extends Document {
     shortOtpCode?: string;
     shortOtpExpiry: Date;
 }
-}
+
 
 export const User = model<IUser>("User", UserSchema)

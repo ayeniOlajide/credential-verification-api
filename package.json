@@ -4,10 +4,12 @@
   "main": "app.js",
   "scripts": {
     "pm2": "cross-env NODE_ENV=production pm2 start build/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "cross-env NODE_ENV=production node build/server.ts",
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "cross-env NODE_ENV=production concurrently \"tsc \""
+    "build": "cross-env NODE_ENV=production concurrently \"tsc \"",
+    "play": "ts-node src/playground.ts",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -45,13 +47,19 @@
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
     "@types/cryptr": "^4.0.3",
+    "@types/jest": "^29.5.14",
     "@types/luxon": "^3.6.2",
     "@types/multer": "^1.4.12",
     "@types/nodemailer": "^6.4.17",
+    "@types/supertest": "^6.0.3",
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.18.1",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
+    "jest": "^30.0.0",
+    "mongodb-memory-server": "^10.1.4",
+    "supertest": "^7.1.1",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"

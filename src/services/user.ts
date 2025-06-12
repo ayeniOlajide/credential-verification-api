@@ -10,24 +10,33 @@ export { IUser };
 
 export const getUser = async (userData: IUserFind): Promise<IUser | null> => {
   try {
-    let user: IUser | null;
-    if (userData.hasOwnProperty("userId") && userData.userId) {
-      user = await User.findOne({ _id: userData.userId })
+    const { userId, longOtpCode, email, username } = userData;
+
+    if (!userId && !email && !username && !longOtpCode) {
+      throw new Error("At least one user identifier is required")
+    }
+
+    if(userId){
+      const user = await User.findById(userId);
       if (user) return user;
     }
-    if (userData.hasOwnProperty("username") && userData.username) {
-      user = await User.findOne({ username: userData.username })
+
+    if(email) {
+      const user = await User.findOne({ email });
       if (user) return user;
     }
-    if (userData.hasOwnProperty("email") && userData.email) {
-      user = await User.findOne({ email: userData.email })
+
+    if(username) {
+      const user = await User.findOne({ username });
       if (user) return user;
     }
-    if (userData.hasOwnProperty("longOtpCode") && userData.longOtpCode) {
-      user = await User.findOne({ longOtpCode: userData.longOtpCode });
+
+    if(longOtpCode) {
+      const user = await User.findOne({ longOtpCode });
       if (user) return user;
     }
-    return null;
+
+    return null
   } catch (error) {
     throw new Error((error as Error).message)
   }
@@ -90,7 +99,7 @@ export const updateUser = async (userId: UserId, userData: IUserUpdate): Promise
   }
 };
 
-export const searchUser = async (searchData: IUserSearch): Promise<Array<IUser> | null> => {
+export const searchUser = async (searchData: IUserSearch): Promise<IUser[] | null> => {
   try {
     let response;
     const searchText = searchData.searchText;
@@ -141,7 +150,7 @@ export const getUsers = async (pagination?: Pagination, filter?: USER_DETAILS): 
   }
 };
 
-export const getAdminUsers = async (pagination?: Pagination, filter?: USER_DETAILS): Promnise<IUsers> => {
+export const getAdminUsers = async (pagination?: Pagination, filter?: USER_DETAILS): Promise<IUsers> => {
   try {
     let users: IUser[] = []
     let count = 0;
@@ -163,3 +172,4 @@ export const getAdminUsers = async (pagination?: Pagination, filter?: USER_DETAI
     throw new Error((error as Error).message)
   }
 }
+

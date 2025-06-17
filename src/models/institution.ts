@@ -4,24 +4,13 @@ import { Country, ICountry } from "./country";
 const InstitutionSchema = new Schema({
     institutionName: {
         type: String,
-        default: null,
         required: true,
+        index: true
     },
-    institutionAddress: {
+    type: {
         type: String,
-        default: null,
-    },
-    phone: {
-        type: String,
-        default: null,
-    },
-    email: {
-        type: String,
-        default: null,
-    },
-    city: {
-        type: String,
-        default: null,
+        enum: ["university", "polytechnic", "training-centre"],
+        default: "university"
     },
     state: {
         type: String,
@@ -30,10 +19,6 @@ const InstitutionSchema = new Schema({
     country: {
         type: Types.ObjectId,
         ref: "Country",
-        default: null,
-    },
-    siteUrl: {
-        type: String,
         default: null,
     },
     deleted: {
@@ -47,13 +32,8 @@ const InstitutionSchema = new Schema({
 export interface IInstitution extends Document {
     _id: Types.ObjectId;
     institutionName: string;
-    institutionAddress?: string;
-    email?: string;
-    phone?: string;
-    city?: string;
     state?: string;
     country: Types.ObjectId | ICountry;
-    siteUrl?: string;
     deleted?: boolean;
 }
 

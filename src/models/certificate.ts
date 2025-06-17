@@ -1,18 +1,13 @@
 import { Schema, Document, model, Types } from "mongoose";
 import { Institution, IInstitution } from "./institution";
+import { IUser, User } from "./user";
 
 const CertificateSchema = new Schema({
-  name: {
-    type: String,
+  user: {
+    type: Types.ObjectId,
+    ref: 'User',
     required: true,
-  },
-  faculty: {
-    type: String,
-    default: null,
-  },
-  department: {
-    type: String,
-    default: null,
+    index: true
   },
   course: {
     type: String,
@@ -22,26 +17,19 @@ const CertificateSchema = new Schema({
     type: String,
     default: null,
   },
-  page: {
-    type: Number,
-    default: null,
-  },
   year: {
     type: String,
     default: null,
   },
-  affiliatedInstitution: {
+  honors: {
     type: String,
-    default: null,
-  },
-  batch: {
-    type: Object,
     default: null,
   },
   institution: {
     type: Types.ObjectId,
     ref: "Institution",
-    required: true
+    required: true,
+    index: true
   },
   deleted: {
     type: Boolean,
@@ -58,16 +46,12 @@ const CertificateSchema = new Schema({
 
 export interface ICertificate extends Document {
   _id: Types.ObjectId;
-  name: string;
-  faculty?: string;
-  department?: string;
+  user: Types.ObjectId | IUser;
   course?: string;
   degree?: string;
-  page?: string;
   year?: string;
-  affiliatedInstitution?: string;
+  honors?: string;
   institution: Types.ObjectId | IInstitution;
-  batch: Types.ObjectId,
   deleted?: boolean;
 }
 

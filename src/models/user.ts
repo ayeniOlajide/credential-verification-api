@@ -1,6 +1,8 @@
 import { Schema, model, Document, Types } from "mongoose";
 import { Role, IRole } from "./role"
-import { IInstitution, Institution } from "./institution";
+import { string } from "joi";
+import { Qualification, IQualification } from "./qualification";
+
 
 const UserSchema = new Schema ({
     username: {
@@ -17,20 +19,34 @@ const UserSchema = new Schema ({
     },
     email: {
         type: String,
-        default: '',
+        required: true,
+        unique: true
     },
     password: {
         type: String,
-        default: '',
+        required: true,
     },
     phone: {
         type: String,
         default: '',
     },
-    institution: {
-        type: Types.ObjectId,
-        ref: "Institution",
-        default: null,
+    location: {
+        type: String,
+        default: '',
+        index: true
+    },
+    dateOfBirth: {
+        type: Date,
+        default: null
+    },
+    bio: {
+        type: String,
+        default: ''
+    },
+    accountType: {
+        type: String,
+        enum: ['candidate', 'recruiter'],
+        default: 'candidate'
     },
     longOtpCode: {
         type: String,
@@ -65,6 +81,11 @@ const UserSchema = new Schema ({
         type: Boolean,
         default: 'false',
     },
+    qualifications: {
+        type: Types.ObjectId,
+        ref: "Qualification",
+        index: true
+    },
     lastSeen: {
         type: Date,
         default: Date.now,
@@ -82,13 +103,16 @@ export interface IUser extends Document {
     role?: Types.ObjectId | IRole;
     password: string;
     phone?: string;
+    dateOfBirth?: Date;
+    bio?: string;
+    accountType?: string;
     emailVerified: string;
     lastSeen?: string;
-    deleted?: string;
-    institution?: Types.ObjectId | IInstitution;
+    deleted?: boolean;
+    location?: string;
     longOtpCode?: string;
     longOtpExpiry: Date;
-    pin?: string;
+    qualifications?: Types.ObjectId | IQualification
     shortOtpCode?: string;
     shortOtpExpiry: Date;
 }

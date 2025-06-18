@@ -68,6 +68,10 @@ const UserSchema = new Schema ({
         type: Boolean,
         default: false
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
     role: {
         type: Types.ObjectId,
         ref: "Role",
@@ -105,11 +109,13 @@ export interface IUser extends Document {
     phone?: string;
     dateOfBirth?: Date;
     bio?: string;
+    isBanned?: boolean;
     accountType?: string;
     emailVerified: string;
     lastSeen?: string;
     deleted?: boolean;
     location?: string;
+    isVerified?: boolean;
     longOtpCode?: string;
     longOtpExpiry: Date;
     qualifications?: Types.ObjectId | IQualification

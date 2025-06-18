@@ -99,10 +99,18 @@ export const createUser = async (userData: IUserCreate): Promise<IUser> => {
   }
 };
 
+
+//tested with jest
 export const confirmUser = async (userId: string): Promise<boolean> => {
   try {
     if (!userId) throw new Error("Account not found, contact support")
-    const isUpdated = await User.findOneAndUpdate({ _id: userId })
+      
+    const isUpdated = await User.findOneAndUpdate(
+      { _id: userId },
+      { isVerified: true },
+      { new: true }
+    );
+
     if (!isUpdated) return false;
     return true;
   } catch (error) {
@@ -110,6 +118,7 @@ export const confirmUser = async (userId: string): Promise<boolean> => {
   }
 }
 
+//
 export const updateUser = async (userId: UserId, userData: IUserUpdate): Promise<boolean> => {
   try {
     const isUpdated = await User.findOneAndUpdate({ _id: userId }, userData);
@@ -369,4 +378,3 @@ export const getAdminUsers = async (pagination?: Pagination, filter?: USER_DETAI
 //     throw new Error((error as Error).message)
 //   }
 // }
-

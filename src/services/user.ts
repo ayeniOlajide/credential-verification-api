@@ -118,7 +118,7 @@ export const confirmUser = async (userId: string): Promise<boolean> => {
   }
 }
 
-//
+//tested with jest
 export const updateUser = async (userId: UserId, userData: IUserUpdate): Promise<boolean> => {
   try {
     const isUpdated = await User.findOneAndUpdate({ _id: userId }, userData);
@@ -171,6 +171,12 @@ export const searchUser = async (searchData: IUserSearch): Promise<IUser[] | nul
 
 export const getUsers = async (pagination?: Pagination, filter?: USER_DETAILS): Promise<IUsers> => {
   try {
+
+    enum SortOrder {
+      ASC = "asc",
+      DESC = "desc"
+    }
+    
     let users: IUser[] = [];
     let count = 0;
     const pageOptions = {

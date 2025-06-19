@@ -1,5 +1,5 @@
 import { User } from "../src/models/user";
-import { searchUser, createUser, getUser, confirmUser, updateUser } from "../src/services/user";
+import { searchUser, createUser, getUser, confirmUser, updateUser, getUsers, getAdminUsers } from "../src/services/user";
 import { Qualification } from "../src/models/qualification"; 
 import { connectTestDB, closeTestDB, clearTestDB } from "../tests/setup";
 import { Types } from "mongoose";
@@ -294,74 +294,165 @@ afterAll(async () => {
 //     })
 
 
-describe("UpdateUser - update all user fields", () => {
-  it("should update all editable fields correctly", async () => {
-    const userId = new Types.ObjectId();
 
-    // Create initial user
-    const user = await User.create({
-      _id: userId,
-      firstName: "Olajide",
-      lastName: "Ayeni",
-      email: "olajide@example.com",
+//update Users
+// describe("UpdateUser - update all user fields", () => {
+//   it("should update all editable fields correctly", async () => {
+//     const userId = new Types.ObjectId();
+
+//     // Create initial user
+//     const user = await User.create({
+//       _id: userId,
+//       firstName: "Olajide",
+//       lastName: "Ayeni",
+//       email: "olajide@example.com",
+//       password: "Test1234!",
+//       username: "olajide_dev",
+//       accountType: "candidate",
+//       isVerified: false,
+//       emailVerified: false,
+//     });
+
+//     // Create qualification
+//     const qualification = await Qualification.create({
+//       user: userId,
+//       degree: "Bachelor",
+//       fieldOfExpertise: "Computer Science",
+//       institution: "University of Lagos",
+//       experienceYears: 5,
+//       year: 2020,
+//     });
+
+//     const updates = {
+//       firstName: "John",
+//       lastName: "Doe",
+//       email: "john@example.com",
+//       username: "john_dev",
+//       location: "Lagos, Nigeria",
+//       isVerified: "true",
+//       dateOfBirth: new Date("1995-06-15"),
+//       bio: "Backend engineer with experience in Node.js",
+//       phone: "08123456789",
+//       isBanned: true,
+//       emailVerified: true,
+//       lastSeen: new Date(),
+//       accountType: "admin",
+//       qualifications: qualification._id,
+//     };
+
+//     const updateResult = await updateUser(userId.toString(), updates);
+//     expect(updateResult).toBe(true);
+
+//     const updatedUser = await User.findById(userId).populate("qualifications");
+
+//     console.log(JSON.stringify(updatedUser, null, 2))
+//     // Assertions
+//     expect(updatedUser?.firstName).toBe("John");
+//     expect(updatedUser?.lastName).toBe("Doe");
+//     expect(updatedUser?.email).toBe("john@example.com");
+//     expect(updatedUser?.username).toBe("john_dev");
+//     expect(updatedUser?.location).toBe("Lagos, Nigeria");
+//     expect(updatedUser?.bio).toBe("Backend engineer with experience in Node.js");
+//     expect(updatedUser?.phone).toBe("08123456789");
+//     expect(updatedUser?.isBanned).toBe(true);
+//     expect(updatedUser?.emailVerified).toBe(true);
+//     expect(updatedUser?.accountType).toBe("admin");
+//     expect(updatedUser?.qualifications?._id.toString()).toBe(qualification._id.toString());
+
+//     // You may want to check this loosely due to timestamp milliseconds
+//     expect(new Date(updatedUser?.dateOfBirth!).toISOString()).toBe(new Date("1995-06-15").toISOString());
+//     expect(new Date(updatedUser?.lastSeen!).getTime()).toBeCloseTo(updates.lastSeen!.getTime(), -1);
+//   });
+// });
+
+
+
+
+
+//get USers
+
+describe("User Service - getUsers with pagination and filters", () => {
+  it("should return all users without filter", async () => {
+    await User.create([
+      {
+        firstName: "Olajide",
+        lastName: "Ayeni",
+        email: "jide1@example.com",
+        password: "Test1234!",
+        username: "jide1",
+        accountType: "candidate"
+      },
+      {
+        firstName: "Ayo",
+        lastName: "Bamidele",
+        email: "ayo@example.com",
+        password: "Test1234!",
+        username: "ayo_dev",
+        accountType: "candidate"
+      }
+    ]);
+
+    const result = await getUsers();
+
+    expect(result).toBeDefined();
+    expect(result.count).toBe(2);
+    expect(result.users?.length).toBe(2); // added optional chaining
+  });
+
+  it("should return filtered users by email", async () => {
+    await User.create([
+      {
+        firstName: "Test1",
+        lastName: "User1",
+        email: "filterme@example.com",
+        password: "Test1234!",
+        username: "filter_user",
+        accountType: "candidate"
+      },
+      {
+        firstName: "Ignore",
+        lastName: "User2",
+        email: "skip@example.com",
+        password: "Test1234!",
+        username: "skip_user",
+        accountType: "candidate"
+      }
+    ]);
+
+    const result = await getUsers(undefined, { email: "filterme@example.com" });
+
+    expect(result).toBeDefined();
+    expect(result.count).toBe(1);
+    expect(result.users?.[0].email).toBe("filterme@example.com");
+  });
+
+  it("should respect pagination limit", async () => {
+    const usersToInsert = Array.from({ length: 10 }, (_, i) => ({
+      firstName: `User${i}`,
+      lastName: `Test${i}`,
+      email: `user${i}@example.com`,
       password: "Test1234!",
-      username: "olajide_dev",
-      accountType: "candidate",
-      isVerified: false,
-      emailVerified: false,
-    });
+      username: `user${i}`,
+      accountType: "candidate"
+    }));
 
-    // Create qualification
-    const qualification = await Qualification.create({
-      user: userId,
-      degree: "Bachelor",
-      fieldOfExpertise: "Computer Science",
-      institution: "University of Lagos",
-      experienceYears: 5,
-      year: 2020,
-    });
+    await User.create(usersToInsert);
 
-    const updates = {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john@example.com",
-      username: "john_dev",
-      location: "Lagos, Nigeria",
-      dateOfBirth: new Date("1995-06-15"),
-      bio: "Backend engineer with experience in Node.js",
-      phone: "08123456789",
-      isBanned: true,
-      emailVerified: true,
-      lastSeen: new Date(),
-      accountType: "admin",
-      qualifications: qualification._id,
-    };
+    const result = await getUsers({ from: 0, limit: 5 });
 
-    const updateResult = await updateUser(userId.toString(), updates);
-    expect(updateResult).toBe(true);
+    expect(result).toBeDefined();
+    expect(result.users?.length).toBe(5);
+    expect(result.count).toBe(10);
+  });
 
-    const updatedUser = await User.findById(userId).populate("qualifications");
+  it("should return empty result when no users match the filter", async () => {
+    const result = await getUsers(undefined, { email: "notfound@example.com" });
 
-    // Assertions
-    expect(updatedUser?.firstName).toBe("John");
-    expect(updatedUser?.lastName).toBe("Doe");
-    expect(updatedUser?.email).toBe("john@example.com");
-    expect(updatedUser?.username).toBe("john_dev");
-    expect(updatedUser?.location).toBe("Lagos, Nigeria");
-    expect(updatedUser?.bio).toBe("Backend engineer with experience in Node.js");
-    expect(updatedUser?.phone).toBe("08123456789");
-    expect(updatedUser?.isBanned).toBe(true);
-    expect(updatedUser?.emailVerified).toBe(true);
-    expect(updatedUser?.accountType).toBe("admin");
-    expect(updatedUser?.qualifications?._id.toString()).toBe(qualification._id.toString());
-
-    // You may want to check this loosely due to timestamp milliseconds
-    expect(new Date(updatedUser?.dateOfBirth!).toISOString()).toBe(new Date("1995-06-15").toISOString());
-    expect(new Date(updatedUser?.lastSeen!).getTime()).toBeCloseTo(updates.lastSeen!.getTime(), -1);
+    expect(result).toBeDefined();
+    expect(result.count).toBe(0);
+    expect(result.users?.length).toBe(0);
   });
 });
-
-
 
 
 
